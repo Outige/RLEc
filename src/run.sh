@@ -1,3 +1,3 @@
-rm a
-gcc -o a encode.c
+rm a.o
+gcc -o a.o encode.c
 ./a $1
