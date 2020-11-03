@@ -1,6 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef struct Item Item;
+struct Item {
+   char  symbol;
+   int  count;
+   Item *next;
+} item;
+
 int main(int argc, char *argv[]) {
   char ch;
   char *fname;
@@ -21,8 +28,45 @@ int main(int argc, char *argv[]) {
   }
 
   /* loop through the file */
+  Item *items = malloc(sizeof(Item));
+  Item *ptr = items;
+  char prev = '\0';
+  int first = 1;
   while ((ch = fgetc(fp)) != EOF) {
-    printf("%c", ch);
+    /* first Item */
+    if (first) {
+      ptr->symbol = ch;
+      ptr->count = 1;
+      first = 0;
+    }
+
+    /* new Item */
+    else if (ch != prev) {
+      ptr->next = malloc(sizeof(Item));
+      ptr = ptr->next;
+      ptr->symbol = ch;
+      ptr->count = 1;
+    }
+
+    /* inc Item */
+    else if (ch == prev) {
+      ptr->count += 1;
+    }
+
+    /* default */
+    else {
+      printf("not sure why I'm here\n");
+    }
+
+    prev = ch;
   }
-  printf("Hello world %s\n", fname);
+  fclose(fp);
+
+  /* write to file */
+  fname = "out.txt"; 
+  fp = fopen(fname, "w+");
+  while (items) {
+    fprintf(fp,"%d%c", items->count, items->symbol);
+    items = items->next;
+  }
 }
